@@ -28,6 +28,18 @@
       <div class="stat"><b id="statAvg">0</b><span>rata-rata rating</span></div>
       <div class="stat"><b id="statTop">–</b><span>vibe favorit</span></div>
     </div>
+
+    <div class="backup-row">
+      <button type="button" class="btn-backup" id="exportBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+        Backup data
+      </button>
+      <button type="button" class="btn-backup" id="importBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V9m0 0 4 4m-4-4-4 4"/><path d="M4 3v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V3"/></svg>
+        Pulihkan data
+      </button>
+      <input type="file" id="importFile" accept="application/json" style="display:none;">
+    </div>
   </header>
 
   <div class="controls">
@@ -136,6 +148,7 @@
 
 <div class="toast hidden" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

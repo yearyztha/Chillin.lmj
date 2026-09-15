@@ -1,7 +1,12 @@
 (function(){
   "use strict";
 
-  const TAGS = ["Tenang","Buat Kerja","Estetik","Rame","Outdoor","Semi Outdoor","Indoor","Open Space","Garden Cafe","Rooftop Cafe","Pet Friendly","Not Pet Friendly","Live Music","Budget Friendly","Halal","Non Halal","VIP Room","AC Room","No Smoke","Smoking Area","WFC Spot","Powers Outlet"];
+  /* ---------------- Supabase setup ---------------- */
+  const SUPABASE_URL = "https://qbsgrrqgvpbnmhizzipm.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFic2dycnFndnBibm1oaXp6aXBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0NTI5MzQsImV4cCI6MjEwNTAyODkzNH0.u3kiYvMWKEvvtii_VTgkwtgWP2cBDDyOweo5lAvP3fk";
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const TAGS = ["Tenang","Buat Kerja","Estetik","Rame","Outdoor","Semi Outdoor","Open Space","Garden Cafe","Rooftop Cafe","Pet Friendly","Not Pet Friendly","Live Music","Budget Friendly","Halal","Non Halal","VIP Room","AC Room","No Smoke","Smoking Area","WFC Spot"];
   const SWATCHES = [
     ["#8FB39C","#5F7E6C"], // sage
     ["#8FB6C2","#5C8A96"], // teal
@@ -11,37 +16,66 @@
     ["#7FB0A0","#4A7E6C"]  // deep mint
   ];
 
-  const SEED_CAFES = [
-    {id: cid(), name:"Kopi Kalyan", location:"Kemang, Jakarta Selatan", rating:5, reviewCount:12, price:"Rp 20.000–45.000", openTime:"08:00", closeTime:"22:00", swatch:0, photo:"", tags:["Tenang","Estetik"], notes:"Kursi rotan di area outdoor enak buat sore-sore. Es kopi susu gula arennya juara."},
-    {id: cid(), name:"Filter & Rye", location:"Senopati, Jakarta Selatan", rating:4, reviewCount:34, price:"Rp 25.000–55.000", openTime:"07:00", closeTime:"21:00", swatch:1, photo:"", tags:["Buat Kerja","Rame"], notes:"Colokan banyak, wifi kenceng. Agak berisik pas jam makan siang."},
-    {id: cid(), name:"Ruang Seduh", location:"Cipete, Jakarta Selatan", rating:4, reviewCount:19, price:"Rp 18.000–40.000", openTime:"09:00", closeTime:"20:00", swatch:3, photo:"", tags:["Outdoor","Pet Friendly"], notes:"Bawa anjing boleh, ada taman kecil. Cocok buat weekend santai."},
-    {id: cid(), name:"Tan Ce Sarang", location:"PIK, Jakarta Utara", rating:3, reviewCount:56, price:"Rp 30.000–70.000", openTime:"10:00", closeTime:"23:00", swatch:2, photo:"", tags:["Estetik","Rame"], notes:"Interior instagramable banget tapi antre lumayan lama."},
-    {id: cid(), name:"Studio Sereh", location:"Cikini, Jakarta Pusat", rating:5, reviewCount:8, price:"Rp 15.000–30.000", openTime:"08:00", closeTime:"18:00", swatch:5, photo:"", tags:["Tenang","Buat Kerja","Budget Friendly"], notes:"Harga bersahabat, cocok buat WFC seharian. Playlist-nya lo-fi terus."},
-    {id: cid(), name:"Malam Jazz House", location:"Blok M, Jakarta Selatan", rating:4, reviewCount:27, price:"Rp 35.000–80.000", openTime:"18:00", closeTime:"02:00", swatch:4, photo:"", tags:["Live Music","Rame"], notes:"Live music tiap Jumat malam. Datang malem biar dapet tempat duduk."}
-  ];
-
-  const STORAGE_KEY = 'cafeLogData';
-
-  function loadCafes(){
-    try{
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if(raw){
-        const parsed = JSON.parse(raw);
-        if(Array.isArray(parsed) && parsed.length) return parsed;
-      }
-    }catch(e){ console.warn('Gagal baca data tersimpan, pakai data awal.', e); }
-    return SEED_CAFES;
-  }
-
-  function saveCafes(){
-    try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cafes));
-    }catch(e){ console.warn('Gagal simpan data.', e); }
-  }
-
-  let cafes = loadCafes();
-
   function cid(){ return 'c' + Math.random().toString(36).slice(2,10); }
+
+  /* ---------------- DB <-> app data mapping ---------------- */
+  function dbToCafe(row){
+    return {
+      id: row.id,
+      name: row.name,
+      location: row.location,
+      rating: row.rating || 0,
+      reviewCount: row.review_count || 0,
+      price: row.price || '',
+      openTime: row.open_time || '',
+      closeTime: row.close_time || '',
+      swatch: row.swatch || 0,
+      photo: row.photo || '',
+      tags: Array.isArray(row.tags) ? row.tags : [],
+      notes: row.notes || ''
+    };
+  }
+
+  function cafeToDb(c){
+    return {
+      id: c.id,
+      name: c.name,
+      location: c.location,
+      rating: c.rating,
+      review_count: c.reviewCount,
+      price: c.price,
+      open_time: c.openTime || null,
+      close_time: c.closeTime || null,
+      swatch: c.swatch,
+      photo: c.photo,
+      tags: c.tags,
+      notes: c.notes
+    };
+  }
+
+  async function fetchCafes(){
+    const { data, error } = await db.from('cafes').select('*').order('created_at', { ascending:false });
+    if(error){ console.error('Gagal ambil data dari Supabase:', error); return []; }
+    return data.map(dbToCafe);
+  }
+
+  async function insertCafe(cafe){
+    const { data, error } = await db.from('cafes').insert([cafeToDb(cafe)]).select();
+    if(error){ console.error('Gagal simpan cafe:', error); throw error; }
+    return dbToCafe(data[0]);
+  }
+
+  async function updateCafeDB(cafe){
+    const { error } = await db.from('cafes').update(cafeToDb(cafe)).eq('id', cafe.id);
+    if(error){ console.error('Gagal update cafe:', error); throw error; }
+  }
+
+  async function deleteCafeDB(id){
+    const { error } = await db.from('cafes').delete().eq('id', id);
+    if(error){ console.error('Gagal hapus cafe:', error); throw error; }
+  }
+
+  let cafes = [];
 
   let editingId = null;
   let deletingId = null;
@@ -70,7 +104,7 @@
   }
 
   function moneySVG(){
-    return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9v0M17.5 15v0"/></svg>`;
+    return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9v0M17.5 15v0"/></svg>`;
   }
 
   function isOpenNow(open, close, now){
@@ -116,12 +150,6 @@
       html += `<span class="${i<=rating?'star-fill':'star-empty'}">${starsSVG(i<=rating)}</span>`;
     }
     return html + '</span>';
-  }
-
-  function fmtDate(d){
-    if(!d) return 'Tanggal belum diisi';
-    const dt = new Date(d + 'T00:00:00');
-    return dt.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
   }
 
   function updateStats(){
@@ -306,7 +334,7 @@
   document.getElementById('cancelForm').addEventListener('click', closeForm);
   formBackdrop.addEventListener('click', (e)=>{ if(e.target === formBackdrop) closeForm(); });
 
-  cafeForm.addEventListener('submit', (e)=>{
+  cafeForm.addEventListener('submit', async (e)=>{
     e.preventDefault();
     const name = document.getElementById('fName').value.trim();
     const location = document.getElementById('fLocation').value.trim();
@@ -319,18 +347,29 @@
     const notes = document.getElementById('fNotes').value.trim();
     if(!name || !location){ return; }
 
-    if(editingId){
-      const c = cafes.find(x=>x.id===editingId);
-      Object.assign(c, {name, location, photo, reviewCount, price, openTime, closeTime, notes, rating: selectedRating, swatch: selectedSwatch, tags:[...selectedTags]});
-      saveCafes();
-      showToast('Perubahan disimpan ✓');
-    } else {
-      cafes.unshift({id: cid(), name, location, photo, reviewCount, price, openTime, closeTime, notes, rating: selectedRating, swatch: selectedSwatch, tags:[...selectedTags]});
-      saveCafes();
-      showToast('Cafe baru ditambahkan ✓');
+    const submitBtn = document.getElementById('submitForm');
+    submitBtn.disabled = true;
+
+    try{
+      if(editingId){
+        const c = cafes.find(x=>x.id===editingId);
+        const updated = {...c, name, location, photo, reviewCount, price, openTime, closeTime, notes, rating: selectedRating, swatch: selectedSwatch, tags:[...selectedTags]};
+        await updateCafeDB(updated);
+        Object.assign(c, updated);
+        showToast('Perubahan disimpan ✓');
+      } else {
+        const newCafe = {id: cid(), name, location, photo, reviewCount, price, openTime, closeTime, notes, rating: selectedRating, swatch: selectedSwatch, tags:[...selectedTags]};
+        const saved = await insertCafe(newCafe);
+        cafes.unshift(saved);
+        showToast('Cafe baru ditambahkan ✓');
+      }
+      closeForm();
+      render();
+    }catch(err){
+      showToast('Gagal simpan, cek koneksi internet');
+    }finally{
+      submitBtn.disabled = false;
     }
-    closeForm();
-    render();
   });
 
   /* ---------------- Confirm delete modal ---------------- */
@@ -350,23 +389,25 @@
   document.getElementById('cancelDelete').addEventListener('click', closeConfirm);
   confirmBackdrop.addEventListener('click', (e)=>{ if(e.target === confirmBackdrop) closeConfirm(); });
 
-  document.getElementById('confirmDelete').addEventListener('click', ()=>{
+  document.getElementById('confirmDelete').addEventListener('click', async ()=>{
     const cardEl = grid.querySelector(`.card[data-id="${deletingId}"]`);
     const idToRemove = deletingId;
     closeConfirm();
-    if(cardEl){
-      cardEl.classList.add('removing');
-      cardEl.addEventListener('animationend', ()=>{
+    try{
+      await deleteCafeDB(idToRemove);
+      const finish = ()=>{
         cafes = cafes.filter(c=>c.id !== idToRemove);
-        saveCafes();
         render();
         showToast('Cafe dihapus');
-      }, {once:true});
-    } else {
-      cafes = cafes.filter(c=>c.id !== idToRemove);
-      saveCafes();
-      render();
-      showToast('Cafe dihapus');
+      };
+      if(cardEl){
+        cardEl.classList.add('removing');
+        cardEl.addEventListener('animationend', finish, {once:true});
+      } else {
+        finish();
+      }
+    }catch(err){
+      showToast('Gagal hapus, cek koneksi internet');
     }
   });
 
@@ -390,5 +431,70 @@
     toastTimer = setTimeout(()=> t.classList.add('hidden'), 2400);
   }
 
-  render();
+  /* ---------------- Backup: export / import ---------------- */
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
+  const importFile = document.getElementById('importFile');
+
+  if(exportBtn){
+    exportBtn.addEventListener('click', ()=>{
+      const blob = new Blob([JSON.stringify(cafes, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'cafe-log-backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Backup diunduh ✓');
+    });
+  }
+
+  if(importBtn){
+    importBtn.addEventListener('click', ()=> importFile.click());
+  }
+
+  if(importFile){
+    importFile.addEventListener('change', async (e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      try{
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        if(!Array.isArray(parsed)) throw new Error('Format file salah');
+        showToast('Memulihkan data...');
+        for(const item of parsed){
+          const cafeToRestore = {
+            id: item.id || cid(),
+            name: item.name || 'Tanpa nama',
+            location: item.location || '',
+            photo: item.photo || '',
+            reviewCount: item.reviewCount || 0,
+            price: item.price || '',
+            openTime: item.openTime || '',
+            closeTime: item.closeTime || '',
+            notes: item.notes || '',
+            rating: item.rating || 0,
+            swatch: item.swatch || 0,
+            tags: Array.isArray(item.tags) ? item.tags : []
+          };
+          try{
+            const saved = await insertCafe(cafeToRestore);
+            cafes.unshift(saved);
+          }catch(err){ /* lewati item yang gagal (mis. id bentrok) */ }
+        }
+        render();
+        showToast('Data berhasil dipulihkan ✓');
+      }catch(err){
+        showToast('Gagal baca file backup');
+      }
+      importFile.value = '';
+    });
+  }
+
+  /* ---------------- Init ---------------- */
+  async function init(){
+    cafes = await fetchCafes();
+    render();
+  }
+  init();
 })();
