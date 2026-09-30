@@ -6,7 +6,7 @@
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFic2dycnFndnBibm1oaXp6aXBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0NTI5MzQsImV4cCI6MjEwNTAyODkzNH0.u3kiYvMWKEvvtii_VTgkwtgWP2cBDDyOweo5lAvP3fk";
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const TAGS = ["Tenang","Buat Kerja","Estetik","Indoor","Rame","Outdoor","Semi Outdoor","Open Space","Garden Cafe","Rooftop Cafe","Pet Friendly","Not Pet Friendly","Live Music","Budget Friendly","Halal","Non Halal","VIP Room","AC Room","No Smoke","Smoking Area","WFC Spot"];
+  const TAGS = ["Tenang","Buat Kerja","Estetik","Rame","Outdoor","Semi Outdoor","Open Space","Garden Cafe","Rooftop Cafe","Pet Friendly","Not Pet Friendly","Live Music","Budget Friendly","Halal","Non Halal","VIP Room","AC Room","No Smoke","Smoking Area","WFC Spot"];
   const SWATCHES = [
     ["#8FB39C","#5F7E6C"], // sage
     ["#8FB6C2","#5C8A96"], // teal
@@ -429,66 +429,6 @@
     t.style.animation = '';
     clearTimeout(toastTimer);
     toastTimer = setTimeout(()=> t.classList.add('hidden'), 2400);
-  }
-
-  /* ---------------- Backup: export / import ---------------- */
-  const exportBtn = document.getElementById('exportBtn');
-  const importBtn = document.getElementById('importBtn');
-  const importFile = document.getElementById('importFile');
-
-  if(exportBtn){
-    exportBtn.addEventListener('click', ()=>{
-      const blob = new Blob([JSON.stringify(cafes, null, 2)], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'cafe-log-backup.json';
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('Backup diunduh ✓');
-    });
-  }
-
-  if(importBtn){
-    importBtn.addEventListener('click', ()=> importFile.click());
-  }
-
-  if(importFile){
-    importFile.addEventListener('change', async (e)=>{
-      const file = e.target.files[0];
-      if(!file) return;
-      try{
-        const text = await file.text();
-        const parsed = JSON.parse(text);
-        if(!Array.isArray(parsed)) throw new Error('Format file salah');
-        showToast('Memulihkan data...');
-        for(const item of parsed){
-          const cafeToRestore = {
-            id: item.id || cid(),
-            name: item.name || 'Tanpa nama',
-            location: item.location || '',
-            photo: item.photo || '',
-            reviewCount: item.reviewCount || 0,
-            price: item.price || '',
-            openTime: item.openTime || '',
-            closeTime: item.closeTime || '',
-            notes: item.notes || '',
-            rating: item.rating || 0,
-            swatch: item.swatch || 0,
-            tags: Array.isArray(item.tags) ? item.tags : []
-          };
-          try{
-            const saved = await insertCafe(cafeToRestore);
-            cafes.unshift(saved);
-          }catch(err){ /* lewati item yang gagal (mis. id bentrok) */ }
-        }
-        render();
-        showToast('Data berhasil dipulihkan ✓');
-      }catch(err){
-        showToast('Gagal baca file backup');
-      }
-      importFile.value = '';
-    });
   }
 
   /* ---------------- Init ---------------- */
