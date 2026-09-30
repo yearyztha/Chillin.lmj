@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title></title>
+<title>Cafe Log — daftar cafe yang pernah dikunjungi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,25 +20,13 @@
       </svg>
       <span style="font-size:13px; color:var(--sage); font-weight:600;">Cafe Log</span>
     </div>
-    <h1>Chillin.id</h1>
-    <p>a collection of spots for hanging out and working from a cafe (WFC).</p>
+    <h1>Cafe yang pernah aku singgahin</h1>
+    <p>Catatan pribadi tempat ngopi favorit — mulai dari vibe-nya, rating, sampe alasan kenapa pengen balik lagi.</p>
 
     <div class="stat-row">
       <div class="stat"><b id="statTotal">0</b><span>cafe tercatat</span></div>
       <div class="stat"><b id="statAvg">0</b><span>rata-rata rating</span></div>
       <div class="stat"><b id="statTop">–</b><span>vibe favorit</span></div>
-    </div>
-
-    <div class="backup-row">
-      <button type="button" class="btn-backup" id="exportBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
-        Backup data
-      </button>
-      <button type="button" class="btn-backup" id="importBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V9m0 0 4 4m-4-4-4 4"/><path d="M4 3v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V3"/></svg>
-        Pulihkan data
-      </button>
-      <input type="file" id="importFile" accept="application/json" style="display:none;">
     </div>
   </header>
 
@@ -47,7 +35,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <input id="search" type="text" placeholder="Cari nama cafe atau lokasi...">
     </div>
-    <select id="filterTag"><option value="">All vibe</option></select>
+    <select id="filterTag"><option value="">Semua vibe</option></select>
     <select id="sortBy">
       <option value="recent">Baru ditambahkan</option>
       <option value="rating">Rating tertinggi</option>
