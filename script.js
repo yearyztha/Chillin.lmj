@@ -1,582 +1,440 @@
-:root{
-    --bg: #F0F4F1;
-    --bg-soft: #E5ECE6;
-    --card: #FFFFFF;
-    --ink: #202B25;
-    --ink-soft: #5C6B62;
-    --ink-faint: #93A29A;
-    --sage: #5F7E6C;
-    --sage-deep: #3E5747;
-    --sage-line: #CFDBD1;
-    --mint: #A9CBB4;
-    --teal: #6E96A0;
-    --blue: #7C93B0;
-    --moss: #8A9B6E;
-    --stone: #94897C;
-    --warn: #BE6B54;
-    --radius-lg: 22px;
-    --radius-md: 14px;
-    --radius-sm: 9px;
-    --shadow: 0 1px 2px rgba(32,43,37,0.04), 0 8px 24px rgba(32,43,37,0.06);
-    --shadow-lift: 0 10px 30px rgba(32,43,37,0.14);
-  }
-
-  *{ box-sizing: border-box; }
-
-  html,body{
-    margin:0; padding:0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  body{
-    background-image:
-      radial-gradient(circle at 8% 0%, rgba(169,203,180,0.35), transparent 40%),
-      radial-gradient(circle at 100% 20%, rgba(124,147,176,0.18), transparent 45%);
-    min-height: 100vh;
-  }
-
-  h1,h2,h3, .display{
-    font-family: 'Bricolage Grotesque', sans-serif;
-  }
-
-  ::selection{ background: var(--mint); color: var(--sage-deep); }
-
-  :focus-visible{
-    outline: 2.5px solid var(--sage);
-    outline-offset: 3px;
-    border-radius: 4px;
-  }
-
-  button{ font-family: inherit; cursor: pointer; }
-
-  .app{
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 56px 28px 140px;
-  }
-
-  /* ---------- Header ---------- */
-  header{
-    margin-bottom: 34px;
-  }
-
-  .eyebrow-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom: 10px;
-  }
-
-  .leaf{
-    width: 22px; height: 22px;
-    flex-shrink: 0;
-  }
-
-  header h1{
-    font-size: clamp(34px, 5.4vw, 52px);
-    font-weight: 700;
-    line-height: 1.02;
-    margin: 0 0 10px 0;
-    color: var(--sage-deep);
-    letter-spacing: -0.02em;
-  }
-
-  header p{
-    margin: 0;
-    font-size: 16px;
-    color: var(--ink-soft);
-    max-width: 46ch;
-    line-height: 1.55;
-  }
-
-  .stat-row{
-    display:flex;
-    gap: 22px;
-    margin-top: 22px;
-    flex-wrap: wrap;
-  }
-
-  .stat{
-    background: var(--card);
-    border: 1px solid var(--sage-line);
-    border-radius: var(--radius-md);
-    padding: 12px 18px;
-    min-width: 108px;
-  }
-
-  .stat b{
-    display:block;
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 22px;
-    color: var(--sage-deep);
-    line-height: 1.1;
-  }
-
-  .stat span{
-    font-size: 12.5px;
-    color: var(--ink-faint);
-  }
-
-  /* ---------- Controls ---------- */
-  .controls{
-    display:flex;
-    gap: 12px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-  }
-
-  .search-wrap{
-    position: relative;
-    flex: 1 1 260px;
-  }
-
-  .search-wrap svg{
-    position:absolute;
-    left:16px; top:50%;
-    transform: translateY(-50%);
-    color: var(--ink-faint);
-  }
-
-  #search{
-    width:100%;
-    padding: 13px 16px 13px 42px;
-    border-radius: 999px;
-    border: 1px solid var(--sage-line);
-    background: var(--card);
-    color: var(--ink);
-    font-size: 14.5px;
-  }
-  #search::placeholder{ color: var(--ink-faint); }
-
-  select#filterTag, select#sortBy{
-    padding: 13px 38px 13px 18px;
-    border-radius: 999px;
-    border: 1px solid var(--sage-line);
-    background: var(--card);
-    color: var(--ink);
-    font-size: 14px;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235C6B62' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-  }
-
-  /* ---------- Grid ---------- */
-  .grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(252px, 1fr));
-    gap: 20px;
-  }
-
-  .card{
-    background: var(--card);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--sage-line);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    display:flex;
-    flex-direction: column;
-    transition: transform .22s ease, box-shadow .22s ease;
-    opacity: 0;
-    transform: translateY(14px);
-    animation: cardIn .5s ease forwards;
-  }
-
-  .card:hover{
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lift);
-  }
-
-  .card.removing{
-    animation: cardOut .28s ease forwards;
-  }
-
-  @keyframes cardIn{
-    to{ opacity: 1; transform: translateY(0); }
-  }
-  @keyframes cardOut{
-    to{ opacity: 0; transform: scale(.92) translateY(6px); }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .card{ animation: none; opacity: 1; transform:none; }
-    .card.removing{ animation: none; }
-  }
-
-  .swatch{
-    height: 168px;
-    position: relative;
-    display:flex;
-    align-items:flex-end;
-    padding: 14px;
-  }
-
-  .swatch::after{
-    content:"";
-    position:absolute; inset:0;
-    background: linear-gradient(to top, rgba(0,0,0,0.16), transparent 55%);
-    pointer-events:none;
-  }
-
-  .swatch .initial{
-    font-family: 'Bricolage Grotesque', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.92);
-  }
-
-  .swatch .card-actions{
-    position:absolute;
-    top: 10px; right: 10px;
-    display:flex;
-    gap: 6px;
-    opacity: 0;
-    transform: translateY(-4px);
-    transition: opacity .18s ease, transform .18s ease;
-  }
-
-  .card:hover .card-actions, .card:focus-within .card-actions{
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .icon-btn{
-    width: 30px; height: 30px;
-    border-radius: 999px;
-    border: none;
-    background: rgba(255,255,255,0.9);
-    display:flex; align-items:center; justify-content:center;
-    color: var(--sage-deep);
-    transition: background .15s ease, transform .12s ease;
-  }
-  .icon-btn:hover{ background: #fff; transform: scale(1.08); }
-  .icon-btn.danger{ color: var(--warn); }
-
-  .card-body{
-    padding: 16px 18px 18px;
-    display:flex;
-    flex-direction:column;
-    gap: 9px;
-    flex:1;
-  }
-
-  .card-body h3{
-    margin:0;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--ink);
-    line-height:1.25;
-  }
-
-  .loc-row{
-    display:flex;
-    align-items:center;
-    gap:5px;
-    font-size: 13px;
-    color: var(--ink-soft);
-  }
-  .loc-row svg{ flex-shrink:0; color: var(--sage-deep); }
-
-  .stars{
-    display:flex;
-    gap: 2px;
-  }
-  .stars svg{ width:16px; height:16px; }
-  .star-fill{ color: var(--sage); }
-  .star-empty{ color: var(--sage-line); }
-
-  .rating-price-row{
-    display:flex;
-    align-items:center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .rating-group{
-    display:flex;
-    align-items:center;
-    gap: 6px;
-  }
-
-  .review-count{
-    font-size: 12px;
-    color: var(--ink-faint);
-  }
-
-  .hours-badge{
-    display:flex;
-    align-items:center;
-    gap: 5px;
-    font-size: 12.5px;
-    color: var(--ink-soft);
-    background: none;
-    border: none;
-    padding: 0;
-    white-space: nowrap;
-  }
-
-  .hours-badge svg{ flex-shrink:0; color: var(--sage-deep); }
-
-  .hours-badge .status-text{
-    font-weight: 700;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: .02em;
-    padding-left: 6px;
-    margin-left: 1px;
-    border-left: 1px solid var(--sage-line);
-  }
-
-  .hours-badge.is-open .status-text{ color: var(--sage-deep); }
-  .hours-badge.is-closed .status-text{ color: var(--warn); }
-
-  .price-row{ margin-top: -2px; }
-
-  .price-tag{
-    display:flex;
-    align-items:center;
-    gap:5px;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--teal);
-    background: none;
-    border: none;
-    padding: 0;
-    white-space: nowrap;
-  }
-  .price-tag svg{ flex-shrink:0; color: var(--sage-deep); }
-
-  .tag-row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-    margin-top:2px;
-  }
-
-  .tag{
-    font-size: 11.5px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: var(--sage);
-    color: #fff;
-    border: 1px solid var(--sage);
-    white-space: nowrap;
-  }
-
-  .notes{
-    font-size: 13px;
-    color: var(--ink-soft);
-    line-height: 1.5;
-    margin-top: 4px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .card-footer{
-    margin-top: auto;
-    padding-top: 10px;
-    border-top: 1px dashed var(--sage-line);
-    font-size: 12px;
-    color: var(--ink-faint);
-  }
-
-  /* ---------- Empty state ---------- */
-  .empty{
-    text-align:center;
-    padding: 80px 20px;
-    color: var(--ink-soft);
-  }
-  .empty.hidden{ display:none; }
-  .empty h3{
-    color: var(--sage-deep);
-    font-size: 22px;
-    margin: 14px 0 6px;
-  }
-  .empty p{ margin:0; font-size:14px; }
-  .empty svg{ color: var(--mint); }
-
-  /* ---------- FAB ---------- */
-  .fab{
-    position: fixed;
-    right: 28px; bottom: 28px;
-    width: 58px; height: 58px;
-    border-radius: 999px;
-    background: var(--sage-deep);
-    color: #fff;
-    border: none;
-    box-shadow: 0 10px 24px rgba(62,87,71,0.38);
-    display:flex; align-items:center; justify-content:center;
-    transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
-    z-index: 40;
-  }
-  .fab:hover{ transform: scale(1.07) rotate(90deg); box-shadow: 0 14px 30px rgba(62,87,71,0.46); }
-  .fab:active{ transform: scale(.96) rotate(90deg); }
-
-  /* ---------- Modal ---------- */
-  .modal-backdrop{
-    position: fixed; inset:0;
-    background: rgba(32,43,37,0.42);
-    backdrop-filter: blur(3px);
-    display:flex; align-items:center; justify-content:center;
-    padding: 20px;
-    z-index: 50;
-    opacity: 0;
-    animation: fadeIn .18s ease forwards;
-  }
-  .modal-backdrop.hidden{ display:none; }
-  @keyframes fadeIn{ to{ opacity:1; } }
-
-  .modal{
-    background: var(--bg);
-    border-radius: 26px;
-    width: 100%;
-    max-width: 480px;
-    max-height: 88vh;
-    overflow-y: auto;
-    padding: 30px 30px 26px;
-    box-shadow: 0 30px 70px rgba(32,43,37,0.32);
-    transform: translateY(14px) scale(.98);
-    opacity: 0;
-    animation: modalIn .22s cubic-bezier(.2,.9,.3,1) forwards;
-  }
-  @keyframes modalIn{ to{ transform: translateY(0) scale(1); opacity:1; } }
-
-  .modal h2{
-    margin: 0 0 4px;
-    font-size: 24px;
-    color: var(--sage-deep);
-  }
-  .modal .sub{
-    margin: 0 0 22px;
-    font-size: 13.5px;
-    color: var(--ink-faint);
-  }
-
-  .field{ margin-bottom: 16px; }
-  .field label{
-    display:block;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--ink-soft);
-    margin-bottom: 6px;
-  }
-  .field input[type=text], .field input[type=date], .field textarea{
-    width:100%;
-    padding: 11px 14px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--sage-line);
-    background: var(--card);
-    color: var(--ink);
-    font-size: 14px;
-    font-family: inherit;
-    resize: vertical;
-  }
-  .field textarea{ min-height: 70px; line-height:1.5; }
-
-  .two-col{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-  .star-picker{ display:flex; gap: 6px; }
-  .star-picker button{
-    background:none; border:none; padding:2px;
-    color: var(--sage-line);
-    transition: color .12s ease, transform .12s ease;
-  }
-  .star-picker button svg{ width:24px; height:24px; }
-  .star-picker button.active{ color: var(--sage); }
-  .star-picker button:hover{ transform: scale(1.12); }
-
-  .swatch-picker{ display:flex; gap:8px; flex-wrap:wrap; }
-  .swatch-dot{
-    width: 30px; height:30px; border-radius:999px;
-    border: 2px solid transparent;
-    cursor:pointer;
-    transition: transform .12s ease, border-color .12s ease;
-  }
-  .swatch-dot.selected{ border-color: var(--ink); transform: scale(1.1); }
-
-  .tag-picker{ display:flex; flex-wrap:wrap; gap:8px; }
-  .tag-choice{
-    padding: 7px 13px;
-    border-radius: 999px;
-    border: 1px solid var(--sage-line);
-    background: var(--card);
-    font-size: 12.5px;
-    color: var(--ink-soft);
-    transition: background .15s ease, color .15s ease, border-color .15s ease;
-  }
-  .tag-choice.selected{
-    background: var(--sage-deep);
-    border-color: var(--sage-deep);
-    color: #fff;
-  }
-
-  .modal-actions{
-    display:flex;
-    gap: 10px;
-    margin-top: 24px;
-  }
-
-  .btn{
-    flex:1;
-    padding: 13px 18px;
-    border-radius: 999px;
-    border: none;
-    font-size: 14.5px;
-    font-weight: 600;
-    transition: background .15s ease, transform .12s ease, opacity .15s ease;
-  }
-  .btn:active{ transform: scale(.97); }
-  .btn-primary{ background: var(--sage-deep); color:#fff; }
-  .btn-primary:hover{ background: #33493c; }
-  .btn-ghost{ background: transparent; color: var(--ink-soft); border: 1px solid var(--sage-line); flex: 0 0 auto; padding-inline: 22px; }
-  .btn-ghost:hover{ background: var(--bg-soft); }
-  .btn-danger{ background: var(--warn); color:#fff; }
-  .btn-danger:hover{ background: #a95841; }
-
-  .close-x{
-    position:absolute;
-    top: 22px; right: 22px;
-    background:none; border:none;
-    color: var(--ink-faint);
-    width: 30px; height:30px;
-    display:flex; align-items:center; justify-content:center;
-    border-radius: 999px;
-  }
-  .close-x:hover{ background: var(--bg-soft); color: var(--ink); }
-  .modal{ position:relative; }
-
-  .confirm-modal{ max-width: 380px; text-align:center; padding: 34px 28px 28px; }
-  .confirm-modal svg{ color: var(--warn); margin-bottom: 12px; }
-  .confirm-modal h2{ font-size: 20px; }
-  .confirm-modal p{ color: var(--ink-soft); font-size: 14px; margin: 8px 0 0; }
-
-  /* ---------- Toast ---------- */
-  .toast{
-    position: fixed;
-    left: 28px; bottom: 28px;
-    background: var(--sage-deep);
-    color: #fff;
-    padding: 13px 20px;
-    border-radius: 999px;
-    font-size: 13.5px;
-    box-shadow: 0 10px 24px rgba(32,43,37,0.25);
-    display:flex; align-items:center; gap:9px;
-    z-index: 60;
-    animation: toastIn .3s cubic-bezier(.2,.9,.3,1) forwards;
-  }
-  .toast.hidden{ display:none; }
-  @keyframes toastIn{ from{ opacity:0; transform: translateY(10px);} to{opacity:1; transform:translateY(0);} }
-
-  @media (max-width: 560px){
-    .app{ padding: 40px 18px 130px; }
-    .two-col{ grid-template-columns: 1fr; }
-    .modal{ padding: 26px 20px 22px; }
-    .fab{ right:18px; bottom:18px; }
-    .toast{ left:18px; right:18px; }
-  }
+(function(){
+  "use strict";
+
+  /* ---------------- Supabase setup ---------------- */
+  const SUPABASE_URL = "https://qbsgrrqgvpbnmhizzipm.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFic2dycnFndnBibm1oaXp6aXBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0NTI5MzQsImV4cCI6MjEwNTAyODkzNH0.u3kiYvMWKEvvtii_VTgkwtgWP2cBDDyOweo5lAvP3fk";
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const TAGS = ["Tenang","Buat Kerja","Estetik","Rame","Outdoor","Semi Outdoor","Open Space","Garden Cafe","Rooftop Cafe","Pet Friendly","Not Pet Friendly","Live Music","Budget Friendly","Halal","Non Halal","VIP Room","AC Room","No Smoke","Smoking Area","WFC Spot"];
+  const SWATCHES = [
+    ["#8FB39C","#5F7E6C"], // sage
+    ["#8FB6C2","#5C8A96"], // teal
+    ["#93A6C9","#6B80A8"], // blue
+    ["#A9B689","#7C8E5C"], // moss
+    ["#B3A794","#8A7B63"], // stone
+    ["#7FB0A0","#4A7E6C"]  // deep mint
+  ];
+
+  function cid(){ return 'c' + Math.random().toString(36).slice(2,10); }
+
+  /* ---------------- DB <-> app data mapping ---------------- */
+  function dbToCafe(row){
+    return {
+      id: row.id,
+      name: row.name,
+      location: row.location,
+      rating: row.rating || 0,
+      reviewCount: row.review_count || 0,
+      price: row.price || '',
+      openTime: row.open_time || '',
+      closeTime: row.close_time || '',
+      swatch: row.swatch || 0,
+      photo: row.photo || '',
+      tags: Array.isArray(row.tags) ? row.tags : [],
+      notes: row.notes || ''
+    };
+  }
+
+  function cafeToDb(c){
+    return {
+      id: c.id,
+      name: c.name,
+      location: c.location,
+      rating: c.rating,
+      review_count: c.reviewCount,
+      price: c.price,
+      open_time: c.openTime || null,
+      close_time: c.closeTime || null,
+      swatch: c.swatch,
+      photo: c.photo,
+      tags: c.tags,
+      notes: c.notes
+    };
+  }
+
+  async function fetchCafes(){
+    const { data, error } = await db.from('cafes').select('*').order('created_at', { ascending:false });
+    if(error){ console.error('Gagal ambil data dari Supabase:', error); return []; }
+    return data.map(dbToCafe);
+  }
+
+  async function insertCafe(cafe){
+    const { data, error } = await db.from('cafes').insert([cafeToDb(cafe)]).select();
+    if(error){ console.error('Gagal simpan cafe:', error); throw error; }
+    return dbToCafe(data[0]);
+  }
+
+  async function updateCafeDB(cafe){
+    const { error } = await db.from('cafes').update(cafeToDb(cafe)).eq('id', cafe.id);
+    if(error){ console.error('Gagal update cafe:', error); throw error; }
+  }
+
+  async function deleteCafeDB(id){
+    const { error } = await db.from('cafes').delete().eq('id', id);
+    if(error){ console.error('Gagal hapus cafe:', error); throw error; }
+  }
+
+  let cafes = [];
+
+  let editingId = null;
+  let deletingId = null;
+  let selectedRating = 0;
+  let selectedSwatch = 0;
+  let selectedTags = [];
+
+  const grid = document.getElementById('grid');
+  const emptyState = document.getElementById('empty');
+  const search = document.getElementById('search');
+  const filterTag = document.getElementById('filterTag');
+  const sortBy = document.getElementById('sortBy');
+
+  TAGS.forEach(t=>{
+    const o = document.createElement('option');
+    o.value = t; o.textContent = t;
+    filterTag.appendChild(o);
+  });
+
+  function starsSVG(filled){
+    return `<svg viewBox="0 0 24 24" fill="${filled? 'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="m12 2 2.9 6.6 7.1.7-5.4 4.8 1.6 7-6.2-3.7L5.8 21l1.6-7L2 9.3l7.1-.7L12 2Z"/></svg>`;
+  }
+
+  function clockSVG(){
+    return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>`;
+  }
+
+  function moneySVG(){
+    return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9v0M17.5 15v0"/></svg>`;
+  }
+
+  function isOpenNow(open, close, now){
+    if(!open || !close) return null;
+    const [oh, om] = open.split(':').map(Number);
+    const [ch, cm] = close.split(':').map(Number);
+    if(Number.isNaN(oh) || Number.isNaN(ch)) return null;
+    const openM = oh*60 + om;
+    const closeM = ch*60 + cm;
+    const nowM = now.getHours()*60 + now.getMinutes();
+    if(openM === closeM) return true;
+    if(openM < closeM) return nowM >= openM && nowM < closeM;
+    return nowM >= openM || nowM < closeM;
+  }
+
+  function updateOpenStatuses(){
+    document.querySelectorAll('.hours-badge').forEach(el=>{
+      const open = el.dataset.open;
+      const close = el.dataset.close;
+      const statusEl = el.querySelector('.status-text');
+      if(!statusEl) return;
+      const state = isOpenNow(open, close, new Date());
+      if(state === null){
+        statusEl.textContent = '';
+        el.classList.remove('is-open','is-closed');
+      } else if(state){
+        statusEl.textContent = 'Buka';
+        el.classList.add('is-open');
+        el.classList.remove('is-closed');
+      } else {
+        statusEl.textContent = 'Tutup';
+        el.classList.add('is-closed');
+        el.classList.remove('is-open');
+      }
+    });
+  }
+
+  setInterval(updateOpenStatuses, 30000);
+
+  function renderStars(rating){
+    let html = '<span class="stars">';
+    for(let i=1;i<=5;i++){
+      html += `<span class="${i<=rating?'star-fill':'star-empty'}">${starsSVG(i<=rating)}</span>`;
+    }
+    return html + '</span>';
+  }
+
+  function updateStats(){
+    document.getElementById('statTotal').textContent = cafes.length;
+    const avg = cafes.length ? (cafes.reduce((s,c)=>s+c.rating,0)/cafes.length).toFixed(1) : '0';
+    document.getElementById('statAvg').textContent = avg;
+    const tagCount = {};
+    cafes.forEach(c=>c.tags.forEach(t=> tagCount[t] = (tagCount[t]||0)+1));
+    const top = Object.entries(tagCount).sort((a,b)=>b[1]-a[1])[0];
+    document.getElementById('statTop').textContent = top ? top[0] : '–';
+  }
+
+  function render(){
+    const q = search.value.trim().toLowerCase();
+    const tagF = filterTag.value;
+    const sort = sortBy.value;
+
+    let list = cafes.filter(c=>{
+      const matchQ = !q || c.name.toLowerCase().includes(q) || c.location.toLowerCase().includes(q);
+      const matchTag = !tagF || c.tags.includes(tagF);
+      return matchQ && matchTag;
+    });
+
+    if(sort === 'rating') list.sort((a,b)=> b.rating - a.rating);
+    else if(sort === 'name') list.sort((a,b)=> a.name.localeCompare(b.name));
+    // default: urutan sesuai penambahan (cafe terbaru ada di paling atas)
+
+    grid.innerHTML = '';
+    emptyState.classList.toggle('hidden', list.length !== 0);
+
+    list.forEach((c, idx)=>{
+      const [c1,c2] = SWATCHES[c.swatch % SWATCHES.length];
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.style.animationDelay = (idx * 45) + 'ms';
+      card.dataset.id = c.id;
+      const bg = c.photo
+        ? `background:#DDE5DF url('${escapeAttr(c.photo)}') center/cover no-repeat;`
+        : `background:linear-gradient(135deg, ${c1}, ${c2});`;
+      card.innerHTML = `
+        <div class="swatch" style="${bg}">
+          <div class="card-actions">
+            <button class="icon-btn" data-action="edit" title="Edit" aria-label="Edit ${escapeHtml(c.name)}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg>
+            </button>
+            <button class="icon-btn danger" data-action="delete" title="Hapus" aria-label="Hapus ${escapeHtml(c.name)}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+            </button>
+          </div>
+          ${c.photo ? '' : `<span class="initial">${escapeHtml(c.name.charAt(0).toUpperCase())}</span>`}
+        </div>
+        <div class="card-body">
+          <h3>${escapeHtml(c.name)}</h3>
+          <div class="loc-row">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.3"/></svg>
+            ${escapeHtml(c.location)}
+          </div>
+          <div class="rating-price-row">
+            <span class="rating-group">
+              ${renderStars(c.rating)}
+              ${c.reviewCount ? `<span class="review-count">(${escapeHtml(String(c.reviewCount))} ulasan)</span>` : ''}
+            </span>
+            <span class="hours-badge" data-open="${c.openTime||''}" data-close="${c.closeTime||''}">
+              ${clockSVG()}
+              <span class="hours-text">${c.openTime && c.closeTime ? `${c.openTime}–${c.closeTime}` : 'Jam belum diisi'}</span>
+              <span class="status-text"></span>
+            </span>
+          </div>
+          ${c.price ? `<div class="price-row"><span class="price-tag">${moneySVG()}${escapeHtml(c.price)}</span></div>` : ''}
+          <div class="tag-row">${c.tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+          ${c.notes ? `<p class="notes">${escapeHtml(c.notes)}</p>` : ''}
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    updateStats();
+    updateOpenStatuses();
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function escapeAttr(str){
+    return String(str).replace(/'/g, "%27").replace(/"/g, "%22");
+  }
+
+  grid.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.icon-btn');
+    if(!btn) return;
+    const card = e.target.closest('.card');
+    const id = card.dataset.id;
+    if(btn.dataset.action === 'edit') openForm(id);
+    if(btn.dataset.action === 'delete') openConfirm(id);
+  });
+
+  search.addEventListener('input', render);
+  filterTag.addEventListener('change', render);
+  sortBy.addEventListener('change', render);
+
+  /* ---------------- Form modal ---------------- */
+  const formBackdrop = document.getElementById('formBackdrop');
+  const cafeForm = document.getElementById('cafeForm');
+  const starPicker = document.getElementById('starPicker');
+  const swatchPicker = document.getElementById('swatchPicker');
+  const tagPicker = document.getElementById('tagPicker');
+
+  for(let i=1;i<=5;i++){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.dataset.val = i;
+    b.innerHTML = starsSVG(true);
+    b.addEventListener('click', ()=>{ selectedRating = i; paintStars(); });
+    starPicker.appendChild(b);
+  }
+  function paintStars(){
+    [...starPicker.children].forEach((b,i)=> b.classList.toggle('active', i < selectedRating));
+  }
+
+  SWATCHES.forEach((pair, i)=>{
+    const dot = document.createElement('div');
+    dot.className = 'swatch-dot';
+    dot.style.background = `linear-gradient(135deg, ${pair[0]}, ${pair[1]})`;
+    dot.addEventListener('click', ()=>{ selectedSwatch = i; paintSwatches(); });
+    dot.dataset.idx = i;
+    swatchPicker.appendChild(dot);
+  });
+  function paintSwatches(){
+    [...swatchPicker.children].forEach((d,i)=> d.classList.toggle('selected', i === selectedSwatch));
+  }
+
+  TAGS.forEach(t=>{
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'tag-choice';
+    chip.textContent = t;
+    chip.addEventListener('click', ()=>{
+      if(selectedTags.includes(t)) selectedTags = selectedTags.filter(x=>x!==t);
+      else selectedTags.push(t);
+      paintTags();
+    });
+    tagPicker.appendChild(chip);
+  });
+  function paintTags(){
+    [...tagPicker.children].forEach(chip=> chip.classList.toggle('selected', selectedTags.includes(chip.textContent)));
+  }
+
+  function openForm(id){
+    editingId = id || null;
+    const c = id ? cafes.find(x=>x.id===id) : null;
+    document.getElementById('formTitle').textContent = c ? 'Edit cafe' : 'Tambah cafe';
+    document.getElementById('formSub').textContent = c ? 'Perbarui detail kunjungan kamu.' : 'Simpan detail tempat ngopi barumu.';
+    document.getElementById('submitForm').textContent = c ? 'Simpan perubahan' : 'Simpan cafe';
+
+    document.getElementById('fName').value = c ? c.name : '';
+    document.getElementById('fLocation').value = c ? c.location : '';
+    document.getElementById('fPhoto').value = c ? (c.photo || '') : '';
+    document.getElementById('fReviewCount').value = c && c.reviewCount ? c.reviewCount : '';
+    document.getElementById('fPrice').value = c ? (c.price || '') : '';
+    document.getElementById('fOpenTime').value = c ? (c.openTime || '') : '';
+    document.getElementById('fCloseTime').value = c ? (c.closeTime || '') : '';
+    document.getElementById('fNotes').value = c ? c.notes : '';
+    selectedRating = c ? c.rating : 0;
+    selectedSwatch = c ? c.swatch : Math.floor(Math.random()*SWATCHES.length);
+    selectedTags = c ? [...c.tags] : [];
+    paintStars(); paintSwatches(); paintTags();
+
+    formBackdrop.classList.remove('hidden');
+    setTimeout(()=> document.getElementById('fName').focus(), 60);
+  }
+
+  function closeForm(){
+    formBackdrop.classList.add('hidden');
+    editingId = null;
+  }
+
+  document.getElementById('addBtn').addEventListener('click', ()=> openForm(null));
+  document.getElementById('closeForm').addEventListener('click', closeForm);
+  document.getElementById('cancelForm').addEventListener('click', closeForm);
+  formBackdrop.addEventListener('click', (e)=>{ if(e.target === formBackdrop) closeForm(); });
+
+  cafeForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const name = document.getElementById('fName').value.trim();
+    const location = document.getElementById('fLocation').value.trim();
+    const photo = document.getElementById('fPhoto').value.trim();
+    const reviewCountRaw = document.getElementById('fReviewCount').value.trim();
+    const reviewCount = reviewCountRaw ? parseInt(reviewCountRaw, 10) || 0 : 0;
+    const price = document.getElementById('fPrice').value.trim();
+    const openTime = document.getElementById('fOpenTime').value;
+    const closeTime = document.getElementById('fCloseTime').value;
+    const notes = document.getElementById('fNotes').value.trim();
+    if(!name || !location){ return; }
+
+    const submitBtn = document.getElementById('submitForm');
+    submitBtn.disabled = true;
+
+    try{
+      if(editingId){
+        const c = cafes.find(x=>x.id===editingId);
+        const updated = {...c, name, location, photo, reviewCount, price, openTime, closeTime, notes, rating: selectedRating, swatch: selectedSwatch, tags:[...selectedTags]};
+        await updateCafeDB(updated);
+        Object.assign(c, updated);
+        showToast('Perubahan disimpan ✓');
+      } else {
+        const newCafe = {id: cid(), name, location, photo, reviewCount, price, openTime, closeTime, notes, rating: selectedRating, swatch: selectedSwatch, tags:[...selectedTags]};
+        const saved = await insertCafe(newCafe);
+        cafes.unshift(saved);
+        showToast('Cafe baru ditambahkan ✓');
+      }
+      closeForm();
+      render();
+    }catch(err){
+      showToast('Gagal simpan, cek koneksi internet');
+    }finally{
+      submitBtn.disabled = false;
+    }
+  });
+
+  /* ---------------- Confirm delete modal ---------------- */
+  const confirmBackdrop = document.getElementById('confirmBackdrop');
+
+  function openConfirm(id){
+    deletingId = id;
+    const c = cafes.find(x=>x.id===id);
+    document.getElementById('confirmText').textContent = `"${c.name}" akan dihapus dari daftar kamu secara permanen.`;
+    confirmBackdrop.classList.remove('hidden');
+  }
+  function closeConfirm(){
+    confirmBackdrop.classList.add('hidden');
+    deletingId = null;
+  }
+
+  document.getElementById('cancelDelete').addEventListener('click', closeConfirm);
+  confirmBackdrop.addEventListener('click', (e)=>{ if(e.target === confirmBackdrop) closeConfirm(); });
+
+  document.getElementById('confirmDelete').addEventListener('click', async ()=>{
+    const cardEl = grid.querySelector(`.card[data-id="${deletingId}"]`);
+    const idToRemove = deletingId;
+    closeConfirm();
+    try{
+      await deleteCafeDB(idToRemove);
+      const finish = ()=>{
+        cafes = cafes.filter(c=>c.id !== idToRemove);
+        render();
+        showToast('Cafe dihapus');
+      };
+      if(cardEl){
+        cardEl.classList.add('removing');
+        cardEl.addEventListener('animationend', finish, {once:true});
+      } else {
+        finish();
+      }
+    }catch(err){
+      showToast('Gagal hapus, cek koneksi internet');
+    }
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape'){
+      if(!formBackdrop.classList.contains('hidden')) closeForm();
+      if(!confirmBackdrop.classList.contains('hidden')) closeConfirm();
+    }
+  });
+
+  /* ---------------- Toast ---------------- */
+  let toastTimer = null;
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.remove('hidden');
+    t.style.animation = 'none';
+    void t.offsetWidth;
+    t.style.animation = '';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> t.classList.add('hidden'), 2400);
+  }
+
+  /* ---------------- Init ---------------- */
+  async function init(){
+    cafes = await fetchCafes();
+    render();
+  }
+  init();
+})();
